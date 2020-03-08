@@ -23,6 +23,7 @@ export default {
   MuiChip,
   MuiIconButton,
   MuiInputBase,
+  MuiLinearProgress,
   MuiListItemIcon,
   MuiOutlinedInput,
   MuiPaper,

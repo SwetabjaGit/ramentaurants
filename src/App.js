@@ -5,7 +5,6 @@ import { createBrowserHistory } from 'history';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import makeStyles from '@material-ui/styles/makeStyles';
 import AuthRoute from './util/AuthRoute';
-import axios from 'axios';
 
 // Redux
 import { Provider } from 'react-redux';

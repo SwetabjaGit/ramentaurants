@@ -22,7 +22,7 @@ const styles = theme.AuthTheme;
 
 const Login = (props) => {
 
-  const { classes, history, UI: { loading } } = props;
+  const { classes, UI: { loading } } = props;
   const INITIAL_STATE = { 
     email: '', 
     password: '', 
@@ -39,10 +39,10 @@ const Login = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const userData = {
+    /* const userData = {
       email: state.email,
       password: state.password
-    };
+    }; */
     //props.loginUser(userData, history);
   };
 
