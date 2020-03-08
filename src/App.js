@@ -8,8 +8,8 @@ import AuthRoute from './util/AuthRoute';
 import axios from 'axios';
 
 // Redux
-/* import { Provider } from 'react-redux';
-import store from './redux/store'; */
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
 // Pages
 import theme from './theme';
@@ -56,7 +56,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      {/* <Provider store={store}> */}
+      <Provider store={store}>
         <div className={classes.root}>
           <Router history={history} >
             <Navbar
@@ -71,7 +71,7 @@ const App = () => {
             </div>
           </Router>
         </div>
-      {/* </Provider> */}
+      </Provider>
     </ThemeProvider>
   );
 };

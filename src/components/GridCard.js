@@ -40,11 +40,11 @@ const useStyles = makeStyles(theme => ({
   },
   actionArea: {
     maxWidth: '100%',
-    maxHeight: 250
+    maxHeight: 200
   },
   media: {
     minWidth: '100%',
-    height: 250
+    height: 200
   },
   content: {
     padding: 0,
