@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
     borderRadius: theme.shape.borderRadius,
     lineHeight: '10px',
     fontSize: '15px',
-    height: 20,
+    height: 30,
     minWidth: 20,
     whiteSpace: 'nowrap',
     padding: theme.spacing(0.5, 1)

@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
 import InfiniteScroll from 'react-infinite-scroller';
+import ReactPaginate from 'react-paginate';
 import SearchIcon from '@material-ui/icons/Search';
 import StarsIcon from '@material-ui/icons/Stars';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
@@ -33,6 +34,8 @@ import {
 import GridCard from '../components/GridCard';
 import Header from '../components/Header';
 import PricingModal from '../components/PricingModal';
+import CardSkeleton from '../components/CardSkeleton';
+
 
 
 const useStyles = makeStyles(theme => ({
@@ -47,7 +50,7 @@ const useStyles = makeStyles(theme => ({
     minWidth: 200,
     borderRadius: 4,
     flexBasis: 300,
-    height: 18,
+    height: 50,
     padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center'
@@ -135,6 +138,10 @@ const useStyles = makeStyles(theme => ({
   trialIcon: {
     marginRight: theme.spacing(1)
   },
+  paginateBox: {
+    textAlign: "center",
+    marginTop: 50,
+  },
 }));
 
 const Restaurants = props => {
@@ -150,6 +157,7 @@ const Restaurants = props => {
     ...rest 
   } = props;
 
+  const itemsPerPage = 8;
   const classes = useStyles();
   const sortRef = useRef(null);
   const searchRef = useRef(null);
@@ -157,14 +165,14 @@ const Restaurants = props => {
   const [openSort, setOpenSort] = useState(false);
   const [selectedSort, setSelectedSort] = useState('All');
   const [mode, setMode] = useState('grid');
-  const [restaurants, setRestaurants] = useState([]);
   const [topRestaurants, setTopRestaurants] = useState([]);
   const [pricingModalOpen, setPricingModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [restaurants, setRestaurants] = useState([]);
   const [errors, setErrors] = useState({});
   //const [openSearchPopover, setOpenSearchPopover] = useState(false);
   //const [hasMoreItems, setHasMoreItems] = useState(true);
   //const [nextHref, setNextHref] = useState(null);
-
 
   const sortOptions = [
     'All',
@@ -192,12 +200,11 @@ const Restaurants = props => {
   }, [listTopRestaurants]);
 
   useEffect(() => {
-    //console.log('data.filteredRestaurants', data.filteredRestaurants);
     setRestaurants(data.filteredRestaurants);
+    console.log(data.filteredRestaurants);
   }, [data.filteredRestaurants]);
 
   useEffect(() => {
-    //console.log('data.topRestaurants', data.topRestaurants);
     setTopRestaurants(data.topRestaurants);
   }, [data.topRestaurants]);
 
@@ -232,23 +239,21 @@ const Restaurants = props => {
     filterRestaurantsByKeyword(event.target.value);
   };
 
-  /* const handleSearchPopverClose = () => {
-    setOpenSearchPopover(false);
-  }; */
-
   const handlePricingOpen = () => {
     setPricingModalOpen(true);
-
   };
 
   const handlePricingClose = () => {
     setPricingModalOpen(false);
   };
 
+  const handlePageClick = (data) => {
+    setCurrentPage(data.selected);
+  };
 
-  const loader = <LinearProgress className={classes.progress} color="secondary" style={{ backgroundColor: '#D41' }} />
-  //const circularLoader = <CircularProgress className={classes.progress} color="secondary" style={{ color: '#D41' }} />
-  
+  //const loader = <LinearProgress className={classes.progress} color="secondary" style={{ backgroundColor: '#D41' }} />
+  let pageCount = data.filteredRestaurants !== null ? Math.ceil(data.filteredRestaurants.length / itemsPerPage) : 0;
+
 
   return (
     <div
@@ -317,21 +322,26 @@ const Restaurants = props => {
           container
           spacing={2}
         >
-          {data.filteredRestaurants && data.filteredRestaurants.map((restaurant, i) => (
-            <Grid
-              item
-              key={i}
-              xl={mode === 'grid' ? 3 : 12}
-              lg={mode === 'grid' ? 4 : 12}
-              md={mode === 'grid' ? 6 : 12}
-              sm={12}
-              xs={12}
-            >
-              <GridCard restaurant={restaurant} />
-            </Grid>
-          ))}
+          {data.filteredRestaurants ? (
+            data.filteredRestaurants
+            .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+              .map((restaurant, i) => (
+                <Grid
+                  item
+                  key={i}
+                  xl={mode === 'grid' ? 3 : 12}
+                  lg={mode === 'grid' ? 4 : 12}
+                  md={mode === 'grid' ? 6 : 12}
+                  sm={12}
+                  xs={12}
+                >
+                  <GridCard restaurant={restaurant} />
+                </Grid>
+              ))
+          ) : (
+            <CardSkeleton />
+          )}
         </Grid>
-        { loading ? loader : <span></span> }
         {/* <InfiniteScroll
           pageStart={0}
           loadMore={fetchMoreData}
@@ -339,6 +349,21 @@ const Restaurants = props => {
           loader={loader}
         >
         </InfiniteScroll> */}
+        <div className={classes.paginateBox}>
+          <ReactPaginate
+            previousLabel={'previous'}
+            nextLabel={'next'}
+            breakLabel={'...'}
+            breakClassName={'break-me'}
+            pageCount={pageCount}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={handlePageClick}
+            containerClassName={'pagination'}
+            subContainerClassName={'pages pagination'}
+            activeClassName={'active'}
+          />
+        </div>
       </div>
 
       <PricingModal
