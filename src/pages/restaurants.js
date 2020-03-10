@@ -10,6 +10,13 @@ import {
   ListItemText,
   Typography,
   Input,
+  Popper,
+  ClickAwayListener,
+  Paper,
+  List,
+  ListItem,
+  ListItemIcon,
+  CircularProgress,
   LinearProgress,
   colors
 } from '@material-ui/core';
@@ -19,6 +26,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import StarsIcon from '@material-ui/icons/Stars';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import axios from 'axios';
 
 // Redux Stuff
 import { connect } from 'react-redux';
@@ -154,14 +162,13 @@ const Restaurants = props => {
   const sortRef = useRef(null);
   const searchRef = useRef(null);
   const [filter, setFilter] = useState('');
+  const [openSearchPopover, setOpenSearchPopover] = useState(false);
   const [openSort, setOpenSort] = useState(false);
   const [selectedSort, setSelectedSort] = useState('All');
   const [mode, setMode] = useState('grid');
   const [restaurants, setRestaurants] = useState([]);
-  const [topRestaurants, setTopRestaurants] = useState([]);
   const [pricingModalOpen, setPricingModalOpen] = useState(false);
   const [errors, setErrors] = useState({});
-  //const [openSearchPopover, setOpenSearchPopover] = useState(false);
   //const [hasMoreItems, setHasMoreItems] = useState(true);
   //const [nextHref, setNextHref] = useState(null);
 
@@ -182,24 +189,23 @@ const Restaurants = props => {
     'JPN',
     'Hong Kong'
   ];
+  const popularSearches = [
+    'Devias React Dashboard',
+    'Devias',
+    'Admin Pannel',
+    'Project',
+    'Pages'
+  ];
 
   useEffect(() => {
+    'console'
     fetchRestaurants();
   }, [fetchRestaurants]);
 
   useEffect(() => {
-    listTopRestaurants()
-  }, [listTopRestaurants]);
-
-  useEffect(() => {
-    //console.log('data.filteredRestaurants', data.filteredRestaurants);
+    //console.log('data.filteredRestaurants', data.filteredRestaurants)
     setRestaurants(data.filteredRestaurants);
   }, [data.filteredRestaurants]);
-
-  useEffect(() => {
-    //console.log('data.topRestaurants', data.topRestaurants);
-    setTopRestaurants(data.topRestaurants);
-  }, [data.topRestaurants]);
 
   useEffect(() => {
     if(props.UI.errors){
@@ -232,22 +238,27 @@ const Restaurants = props => {
     filterRestaurantsByKeyword(event.target.value);
   };
 
-  /* const handleSearchPopverClose = () => {
+  const handleSearchPopverClose = () => {
     setOpenSearchPopover(false);
-  }; */
+  };
 
   const handlePricingOpen = () => {
     setPricingModalOpen(true);
-
   };
 
   const handlePricingClose = () => {
     setPricingModalOpen(false);
   };
 
+  const api = {
+    baseUrl: 'https://api.soundcloud.com',
+    user_id: '94957189',
+    client_id: 'sttWEuQHjL9Wqu5vwNb0iNf52zXFtQvs',
+    page_size: '12'
+  };
 
   const loader = <LinearProgress className={classes.progress} color="secondary" style={{ backgroundColor: '#D41' }} />
-  //const circularLoader = <CircularProgress className={classes.progress} color="secondary" style={{ color: '#D41' }} />
+  const circularLoader = <CircularProgress className={classes.progress} color="secondary" style={{ color: '#D41' }} />
   
 
   return (
@@ -282,6 +293,34 @@ const Restaurants = props => {
             />
             <SearchIcon className={classes.searchIcon} />
           </div>
+          {/* <Popper
+            anchorEl={searchRef.current}
+            className={classes.searchPopper}
+            open={openSearchPopover}
+            transition
+          >
+            <ClickAwayListener onClickAway={handleSearchPopverClose}>
+              <Paper
+                className={classes.searchPopperContent}
+                elevation={3}
+              >
+                <List>
+                  {popularSearches.map(search => (
+                    <ListItem
+                      button
+                      key={search}
+                      onClick={handleSearchPopverClose}
+                    >
+                      <ListItemIcon>
+                        <SearchIcon />
+                      </ListItemIcon>
+                      <ListItemText primary={search} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            </ClickAwayListener>
+          </Popper> */}
           <Button
             className={classes.trialButton}
             onClick={handlePricingOpen}
@@ -342,7 +381,6 @@ const Restaurants = props => {
       </div>
 
       <PricingModal
-        topRestaurants={topRestaurants}
         onClose={handlePricingClose}
         open={pricingModalOpen}
       />

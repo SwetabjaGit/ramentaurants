@@ -34,13 +34,12 @@ export default (state = initialState, action) => {
       };
     case LIST_TOP_RESTAURANTS:
       let topArray = new Array(3000);
-      state.restaurants && state.restaurants.map(
+      state.restaurants.map(
         (restaurant, i) => {
           let data = restaurant['Top Ten'].split(" ");
           if(data[1] && data[1].slice(1) === '1'){
             topArray[data[0]] = i;
           }
-          return restaurant;
         }
       );
       const resIndexArray = topArray.filter((index, i) => topArray[index] !== null);

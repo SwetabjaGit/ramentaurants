@@ -22,7 +22,6 @@ export const fetchRestaurants = () => (dispatch) => {
     .then(res => {
       //console.log(res.data);
       dispatch(setRestaurants(res.data));
-      dispatch(listTopRestaurants());
       dispatch(clearErrors());
       dispatch({ type: STOP_FETCHING })
     })

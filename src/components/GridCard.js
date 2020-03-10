@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import moment from 'moment';
 import { makeStyles } from '@material-ui/styles';
 import {
   Avatar,
@@ -22,6 +23,7 @@ import {
 import ShareIcon from '@material-ui/icons/Share';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import StarIcon from '@material-ui/icons/Star';
+import StarRateIcon from '@material-ui/icons/StarRate';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import Label from './Label';
 import RestaurantImage from '../images/singapore-restaurant.jpg';
@@ -83,6 +85,8 @@ const GridCard = props => {
 
   const classes = useStyles();
   const [liked, setLiked] = useState(false);
+  //const tagList = restaurant.tag_list.match(/([\w\s]+ [\w\s]+ . [\w\s]+)|([\w\s]+ [\w\s]+ [\w\s]+)|([\w\s]+ [\w\s]+)|([\w\s]+)/g);
+
 
   const handleLike = () => {
     setLiked(true);
