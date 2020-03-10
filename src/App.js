@@ -33,20 +33,6 @@ const useStyles = makeStyles(() => ({
 
 const history = createBrowserHistory();
 let authenticated = false;
-/* axios.defaults.baseURL = 'https://us-central1-socialape-d8699.cloudfunctions.net/api';
-const token = localStorage.FBIdToken;
-if (token) {
-  const decodedToken = jwtDecode(token);
-  console.log(decodedToken);
-  if(decodedToken.exp * 1000 < Date.now()){
-    store.dispatch(logoutUser())
-    window.location.href = '/login';
-  } else {
-    store.dispatch({ type: SET_AUTHENTICATED });
-    axios.defaults.headers.common['Authorization'] = token;
-    store.dispatch(getUserData());
-  }
-}; */
 
 
 const App = () => {

@@ -21,7 +21,7 @@ import {
 } from '@material-ui/core';
 import ShareIcon from '@material-ui/icons/Share';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import StarIcon from '@material-ui/icons/Star';
+import StarRateIcon from '@material-ui/icons/StarRate'
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import Label from './Label';
 import RestaurantImage from '../images/singapore-restaurant.jpg';
@@ -129,7 +129,7 @@ const GridCard = props => {
             >
               {restaurant.Brand.substring(0, 15)}
             </Link>{' '}
-            | Updated: 10 months ago
+            | 10 days ago
           </Typography>
         }
       />
@@ -184,9 +184,9 @@ const GridCard = props => {
               <Typography className={classes.centerText} variant="body2">Country</Typography>
             </Grid>
             <Grid md={3} item>
-              <Typography className={classes.boldText} variant="h3">
-                {restaurant.Stars}
-                <StarIcon className={classes.starIcon} />
+              <Typography className={classes.boldText} variant="h4">
+                { restaurant.Stars !== 'NaN' ? restaurant.Stars : 0 }
+                <StarRateIcon className={classes.starIcon} />
               </Typography>
               <Typography className={classes.centerText} variant="body2">Stars</Typography>
             </Grid>
