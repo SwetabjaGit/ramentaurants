@@ -20,7 +20,6 @@ export const fetchRestaurants = () => (dispatch) => {
   dispatch({ type: LOADING_UI });
   axios.get(fetchUrl)
     .then(res => {
-      //console.log(res.data);
       dispatch(setRestaurants(res.data));
       dispatch(listTopRestaurants());
       dispatch(clearErrors());
