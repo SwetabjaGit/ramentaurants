@@ -201,7 +201,6 @@ const Restaurants = props => {
 
   useEffect(() => {
     setRestaurants(data.filteredRestaurants);
-    console.log(data.filteredRestaurants);
   }, [data.filteredRestaurants]);
 
   useEffect(() => {
