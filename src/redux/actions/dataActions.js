@@ -12,7 +12,7 @@ import {
 } from '../types';
 import axios from 'axios';
 
-const fetchUrl = 'http://starlord.hackerearth.com/TopRamen';
+const fetchUrl = 'https://demo7326610.mockable.io/react/top-restaurants';
 
 // Fetch All Restaurants
 export const fetchRestaurants = () => (dispatch) => {
