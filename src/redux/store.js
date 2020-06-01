@@ -13,13 +13,21 @@ const reducers = combineReducers({
   UI: uiReducer
 });
 
+let composeMiddleware = 
+  process.env.NODE_ENV === 'development'
+  ? compose(
+      applyMiddleware(...middleware),
+      process.env.NODE_ENV === 'development' && (
+        window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+      )
+	) : (
+    compose(applyMiddleware(...middleware))
+  );
+
 const store = createStore(
-  reducers, 
+	reducers,
   initialState,
-  compose(
-    applyMiddleware(...middleware),
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-  )
+	composeMiddleware
 );
 
 export default store;
