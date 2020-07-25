@@ -12,16 +12,15 @@ import {
 } from '../types';
 import axios from 'axios';
 
-const fetchUrl = 'https://demo7326610.mockable.io/react/top-restaurants';
 
 // Fetch All Restaurants
-export const fetchRestaurants = () => (dispatch) => {
-  dispatch({ type: FETCH_RESTAURANTS });
+export const fetchRestaurants = (fetchUrl) => (dispatch) => {
   dispatch({ type: LOADING_UI });
+  dispatch({ type: FETCH_RESTAURANTS });
   axios.get(fetchUrl)
     .then(res => {
       dispatch(setRestaurants(res.data));
-      dispatch(listTopRestaurants());
+      //dispatch(listTopRestaurants());
       dispatch(clearErrors());
       dispatch({ type: STOP_FETCHING })
     })
@@ -70,7 +69,7 @@ export const clearErrors = () => (dispatch) => {
 export const setErrors = (error) => (dispatch) => {
   dispatch({
     type: SET_ERRORS,
-    payload: error.response.data
+    payload: error.response
   });
   dispatch({ type: STOP_LOADING_UI });
 };

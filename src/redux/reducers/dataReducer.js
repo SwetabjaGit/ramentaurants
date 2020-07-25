@@ -8,10 +8,11 @@ import {
 } from '../types';
 
 const initialState = {
-  restaurants: null,
-  filteredRestaurants: null,
+  restaurants: [],
   topRestaurants: [],
-  loading: false
+  loading: false,
+  nextHref: null,
+  hasMoreItems: true
 };
 
 export default (state = initialState, action) => {
@@ -27,10 +28,21 @@ export default (state = initialState, action) => {
         loading: false
       };
     case SET_RESTAURANTS:
+      let restaurants = state.restaurants;
+      action.payload.collection && action.payload.collection.map(article => {
+        return restaurants.push(article);
+      });
+      let hasMoreItemss = true;
+      if(action.payload.next_href) {
+        hasMoreItemss = true;
+      } else {
+        hasMoreItemss = false;
+      }
       return {
         ...state,
-        restaurants: action.payload,
-        filteredRestaurants: action.payload
+        restaurants: restaurants,
+        nextHref: action.payload.next_href,
+        hasMoreItems: hasMoreItemss
       };
     case LIST_TOP_RESTAURANTS:
       let topArray = new Array(3000);
@@ -51,20 +63,18 @@ export default (state = initialState, action) => {
         topRestaurants: topRes
       };
     case LIST_COUNTRY_RESTAURANTS:
-      state.filteredRestaurants = state.restaurants;
       return {
         ...state,
-        filteredRestaurants: action.payload === 'All' ? state.restaurants :
+        restaurants: action.payload === 'All' ? state.restaurants :
           (state.restaurants.filter(
             (restaurant) =>  restaurant.Country === action.payload
           ))
       };
     case FILTER_RESTAURANTS:
-      state.filteredRestaurants = state.restaurants;
       const lowercasedFilter = action.payload.toLowerCase();
       return {
         ...state,
-        filteredRestaurants: state.restaurants.filter(item => {
+        restaurants: state.restaurants.filter(item => {
           return Object.keys(item).some(key =>
             typeof item[key] === "string" && item[key].toLowerCase().includes(lowercasedFilter)
           )

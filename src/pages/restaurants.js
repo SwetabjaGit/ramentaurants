@@ -10,7 +10,7 @@ import {
   ListItemText,
   Typography,
   Input,
-  LinearProgress,
+  CircularProgress,
   colors
 } from '@material-ui/core';
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
@@ -32,10 +32,8 @@ import {
 
 // Components
 import GridCard from '../components/GridCard';
-import Header from '../components/Header';
 import PricingModal from '../components/PricingModal';
 import CardSkeleton from '../components/CardSkeleton';
-
 
 
 const useStyles = makeStyles(theme => ({
@@ -116,7 +114,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center'
   },
-  progress: {
+  /* progress: {
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
@@ -124,6 +122,15 @@ const useStyles = makeStyles(theme => ({
     marginTop: 100,
     marginBottom: 100,
     padding: 5,
+    zoom: 1.5
+  }, */
+  progress: {
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative',
+    margin: 'auto',
+    marginTop: 20,
+    marginBottom: 30,
     zoom: 1.5
   },
   trialButton: {
@@ -148,15 +155,12 @@ const Restaurants = props => {
   const {
     className, 
     staticContext,
-    fetchRestaurants,
-    listTopRestaurants,
-    listRestaurantsByCountry,
-    filterRestaurantsByKeyword,
-    data,
-    UI: { loading },
-    ...rest 
+    restaurants,
+    topRestaurants,
+    loading,
+    nextHref,
+    hasMoreItems
   } = props;
-
   const itemsPerPage = 8;
   const classes = useStyles();
   const sortRef = useRef(null);
@@ -165,14 +169,10 @@ const Restaurants = props => {
   const [openSort, setOpenSort] = useState(false);
   const [selectedSort, setSelectedSort] = useState('All');
   const [mode, setMode] = useState('grid');
-  const [topRestaurants, setTopRestaurants] = useState([]);
   const [pricingModalOpen, setPricingModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [restaurants, setRestaurants] = useState([]);
   const [errors, setErrors] = useState({});
-  //const [openSearchPopover, setOpenSearchPopover] = useState(false);
-  //const [hasMoreItems, setHasMoreItems] = useState(true);
-  //const [nextHref, setNextHref] = useState(null);
+  //let pageCount = restaurants !== null ? Math.ceil(restaurants.length / itemsPerPage) : 0;
 
   const sortOptions = [
     'All',
@@ -191,28 +191,14 @@ const Restaurants = props => {
     'Hong Kong'
   ];
 
-  useEffect(() => {
-    fetchRestaurants();
-  }, [fetchRestaurants]);
+  /* useEffect(() => {
+    props.listTopRestaurants();
+  }, [props.listTopRestaurants]); */
 
   useEffect(() => {
-    listTopRestaurants()
-  }, [listTopRestaurants]);
-
-  useEffect(() => {
-    setRestaurants(data.filteredRestaurants);
-  }, [data.filteredRestaurants]);
-
-  useEffect(() => {
-    setTopRestaurants(data.topRestaurants);
-  }, [data.topRestaurants]);
-
-  useEffect(() => {
-    if(props.UI.errors){
-      setErrors(props.UI.errors);
-    }
-  }, [props.UI.errors]);
-
+    console.log({ restaurants });
+    console.log({ topRestaurants });
+  }, [restaurants, topRestaurants]);
 
 
   const handleSortOpen = () => {
@@ -226,7 +212,7 @@ const Restaurants = props => {
   const handleSortSelect = value => {
     setSelectedSort(value);
     setOpenSort(false);
-    listRestaurantsByCountry(value);
+    props.listRestaurantsByCountry(value);
   };
 
   const handleModeChange = (event, value) => {
@@ -235,7 +221,7 @@ const Restaurants = props => {
 
   const handleSearchChange = (event) => {
     setFilter(event.target.value);
-    filterRestaurantsByKeyword(event.target.value);
+    props.filterRestaurantsByKeyword(event.target.value);
   };
 
   const handlePricingOpen = () => {
@@ -250,26 +236,116 @@ const Restaurants = props => {
     setCurrentPage(data.selected);
   };
 
-  //const loader = <LinearProgress className={classes.progress} color="secondary" style={{ backgroundColor: '#D41' }} />
-  let pageCount = data.filteredRestaurants !== null ? Math.ceil(data.filteredRestaurants.length / itemsPerPage) : 0;
+
+  let paginateBar = (
+    <div className={classes.paginateBox}>
+      <ReactPaginate
+        previousLabel={'previous'}
+        nextLabel={'next'}
+        breakLabel={'...'}
+        breakClassName={'break-me'}
+        pageCount={8}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={5}
+        onPageChange={handlePageClick}
+        containerClassName={'pagination'}
+        subContainerClassName={'pages pagination'}
+        activeClassName={'active'}
+      />
+    </div>
+  );
+
+  const loader = (
+    <CircularProgress
+      key={0}
+      className={classes.progress}
+      color="secondary" 
+      style={{ color: '#D41' }} 
+    />
+  );
+
+  const fetchMoreData = () => {
+    let articlesUrl = `https://asia-east2-socialape-d8699.cloudfunctions.net/api/nytarticles?page_size=8`;
+    if(nextHref) {
+      articlesUrl = nextHref;
+    }
+    console.log('%c SCREAMS REFRESHED', 'color: green; font-weight: bold');
+    props.fetchRestaurants(articlesUrl);
+  };
+
+  let fetchedArticles = loading && restaurants.length === 0 ? (
+    <CardSkeleton/>
+  ) : (
+    <InfiniteScroll
+      pageStart={0}
+      loadMore={fetchMoreData}
+      hasMore={hasMoreItems}
+      loader={restaurants.length === 0
+        ? <CardSkeleton key={0} />
+        : loader
+      }
+    >
+      <Grid
+        container
+        spacing={2}
+      >
+        {restaurants.map((restaurant, i) => (
+          <Grid
+            key={i}
+            item
+            xl={mode === 'grid' ? 3 : 12}
+            lg={mode === 'grid' ? 4 : 12}
+            md={mode === 'grid' ? 6 : 12}
+            sm={12}
+            xs={12}
+          >
+            <GridCard
+              key={restaurant._id}
+              restaurant={restaurant} 
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </InfiniteScroll>
+  );
+
+
+  /* let itemsGrid = (
+    <Grid
+      container
+      spacing={2}
+    >
+      {data.filteredRestaurants ? (
+        data.filteredRestaurants
+          .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+          .map((restaurant, i) => (
+            <Grid
+              item
+              key={i}
+              xl={mode === 'grid' ? 3 : 12}
+              lg={mode === 'grid' ? 4 : 12}
+              md={mode === 'grid' ? 6 : 12}
+              sm={12}
+              xs={12}
+            >
+              <GridCard restaurant={restaurant} />
+            </Grid>
+          ))
+      ) : (
+        <CardSkeleton />
+      )}
+    </Grid>
+  ); */
 
 
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
-      <Header
-        title="RAMENTAURANTS"
-        description="Top Ramen restaurants of the world"
-      />
-
+    <div className={clsx(classes.root, className)}>
       <div className={classes.header}>
         <Typography
           className={classes.title}
           variant="h1"
         >
-          Showing {data.filteredRestaurants && data.filteredRestaurants.length} restaurants
+          Showing {restaurants && restaurants.length} restaurants
         </Typography>
 
         <div className={classes.actions}>
@@ -284,7 +360,10 @@ const Restaurants = props => {
               placeholder="Search for Restaurants"
               value={filter}
             />
-            <SearchIcon className={classes.searchIcon} />
+            <SearchIcon 
+              fontSize="large" 
+              className={classes.searchIcon} 
+            />
           </div>
           <Button
             className={classes.trialButton}
@@ -309,60 +388,14 @@ const Restaurants = props => {
             value={mode}
           >
             <ToggleButton value="grid">
-              <ViewModuleIcon />
+              <ViewModuleIcon fontSize="large" />
             </ToggleButton>
           </ToggleButtonGroup>
         </div>
       </div>
       
       <div className={classes.restaurantData}>
-        
-        <Grid
-          container
-          spacing={2}
-        >
-          {data.filteredRestaurants ? (
-            data.filteredRestaurants
-            .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
-              .map((restaurant, i) => (
-                <Grid
-                  item
-                  key={i}
-                  xl={mode === 'grid' ? 3 : 12}
-                  lg={mode === 'grid' ? 4 : 12}
-                  md={mode === 'grid' ? 6 : 12}
-                  sm={12}
-                  xs={12}
-                >
-                  <GridCard restaurant={restaurant} />
-                </Grid>
-              ))
-          ) : (
-            <CardSkeleton />
-          )}
-        </Grid>
-        {/* <InfiniteScroll
-          pageStart={0}
-          loadMore={fetchMoreData}
-          hasMore={hasMoreItems}
-          loader={loader}
-        >
-        </InfiniteScroll> */}
-        <div className={classes.paginateBox}>
-          <ReactPaginate
-            previousLabel={'previous'}
-            nextLabel={'next'}
-            breakLabel={'...'}
-            breakClassName={'break-me'}
-            pageCount={pageCount}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={5}
-            onPageChange={handlePageClick}
-            containerClassName={'pagination'}
-            subContainerClassName={'pages pagination'}
-            activeClassName={'active'}
-          />
-        </div>
+        {fetchedArticles}
       </div>
 
       <PricingModal
@@ -394,17 +427,21 @@ const Restaurants = props => {
 
 Restaurants.propTypes = {
   className: PropTypes.string,
+  loading: PropTypes.bool,
+  nextHref: PropTypes.string.isRequired,
+  hasMoreItems: PropTypes.bool.isRequired,
   fetchRestaurants: PropTypes.func.isRequired,
   listTopRestaurants: PropTypes.func.isRequired,
   listRestaurantsByCountry: PropTypes.func.isRequired,
   filterRestaurantsByKeyword: PropTypes.func.isRequired,
-  data: PropTypes.object.isRequired,
-  UI: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
-  data: state.data,
-  UI: state.UI
+  restaurants: state.data.restaurants,
+  topRestaurants: state.data.topRestaurants,
+  loading: state.data.loading,
+  nextHref: state.data.nextHref,
+  hasMoreItems: state.data.hasMoreItems
 });
 
 const mapActionsToProps = {

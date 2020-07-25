@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import moment from 'moment';
 import { makeStyles } from '@material-ui/styles';
 import {
   Avatar,
@@ -24,7 +25,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import StarRateIcon from '@material-ui/icons/StarRate'
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import Label from './Label';
-import RestaurantImage from '../images/singapore-restaurant.jpg';
+//import RestaurantImage from '../images/singapore-restaurant.jpg';
 
 
 const spacing = 2;
@@ -108,9 +109,9 @@ const GridCard = props => {
         avatar={
           <Avatar
             alt="Author"
-            src="https://i1.sndcdn.com/avatars-000028641198-836cos-large.jpg"
+            src={restaurant.multimedia[1] && restaurant.multimedia[1]}
           >
-            {restaurant.Brand}
+            {restaurant.headline && restaurant.headline.main}
           </Avatar>
         }
         title={
@@ -120,7 +121,7 @@ const GridCard = props => {
             href="#"
             variant="h5"
           >
-            {restaurant.Brand}
+            {restaurant.byline.original && restaurant.byline.original.substring(0, 50)}
           </Link>
         }
         subheader={
@@ -132,9 +133,9 @@ const GridCard = props => {
               href="#"
               variant="h6"
             >
-              {restaurant.Brand.substring(0, 15)}
+              {restaurant.byline.original && restaurant.byline.original.substring(0, 15)}
             </Link>{' '}
-            | 10 days ago
+            | {restaurant.pub_date && moment(restaurant.pub_date).fromNow()}
           </Typography>
         }
       />
@@ -146,7 +147,7 @@ const GridCard = props => {
           >
             <CardMedia
               className={classes.media}
-              image={RestaurantImage}
+              image={restaurant.multimedia[0] && restaurant.multimedia[0]}
               title="RestaurantImage"
             />
           </CardActionArea>
@@ -157,7 +158,7 @@ const GridCard = props => {
             color="textSecondary"
             variant="subtitle2"
           >
-            { restaurant.Variety.substring(0, 40) }
+            {restaurant.snippet && restaurant.snippet.substring(0, 100)}
           </Typography>
         </div>
 
@@ -167,7 +168,7 @@ const GridCard = props => {
             key="ReactJS"
             variant="outlined"
           >
-            {restaurant['Top Ten']}
+            {restaurant.news_desk && restaurant.news_desk}
           </Label>
         </div>
 
@@ -181,19 +182,16 @@ const GridCard = props => {
             spacing={1}
           >
             <Grid md={2} item>
-              <Typography className={classes.boldText} variant="h5">{restaurant.Style}</Typography>
-              <Typography className={classes.centerText} variant="body2">Style</Typography>
+              <Typography className={classes.boldText} variant="h5">{restaurant.document_type}</Typography>
+              <Typography className={classes.centerText} variant="body2">DocType</Typography>
             </Grid>
             <Grid md={7} item>
-              <Typography className={classes.boldText} variant="h5">{restaurant.Country}</Typography>
-              <Typography className={classes.centerText} variant="body2">Country</Typography>
+              <Typography className={classes.boldText} variant="h5">{restaurant.news_desk}</Typography>
+              <Typography className={classes.centerText} variant="body2">NewsDesk</Typography>
             </Grid>
             <Grid md={3} item>
-              <Typography className={classes.boldText} variant="h4">
-                { restaurant.Stars !== 'NaN' ? restaurant.Stars : 0 }
-                <StarRateIcon className={classes.starIcon} />
-              </Typography>
-              <Typography className={classes.centerText} variant="body2">Stars</Typography>
+              <Typography className={classes.boldText} variant="h4">{restaurant.word_count}</Typography>
+              <Typography className={classes.centerText} variant="body2">WordCount</Typography>
             </Grid>
             <Grid item>
               {liked ? (
